@@ -1,21 +1,22 @@
 import 'dart:convert';
+import 'package:web_socket_channel/status.dart' as status;
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../model/support_chat_model.dart';
-
 
 class SupportWebSocketService {
   WebSocketChannel? _channel;
-  final String baseUrl = 'ws://YOUR_SERVER_URL'; // Change this
+  final String baseUrl = 'ws://10.0.2.2:5000'; // Change this
   Function(SupportChatMessage)? onMessageReceived;
   String? currentSupportId;
 
   void connect(String supportId) {
     currentSupportId = supportId;
-
     try {
-      _channel = WebSocketChannel.connect(
-        Uri.parse(baseUrl),
-        headers: {'supportid': supportId},
+      final uri = Uri.parse(baseUrl).replace(
+        queryParameters: {'supportid': supportId},
       );
+
+      _channel = WebSocketChannel.connect(uri);
 
       _channel!.stream.listen(
             (message) {

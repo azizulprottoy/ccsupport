@@ -1,15 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controller/chat_controller.dart';
+import '../model/support_chat_model.dart';
 
-class SupportChatPage extends StatelessWidget {
-  final controller = Get.find<SupportChatController>();
+class SupportChatPage extends StatefulWidget {
+  @override
+  State<SupportChatPage> createState() => _SupportChatPageState();
+}
+
+class _SupportChatPageState extends State<SupportChatPage> {
+  late final SupportChatController controller;
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
   @override
-  Widget build(BuildContext context) {
-    final supportId = Get.arguments as String;
-    controller.openChat(supportId);
+  void initState() {
+    super.initState();
+    controller = Get.find<SupportChatController>();
 
+    // Get supportId from arguments and open chat
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final supportId = Get.arguments as String?;
+      if (supportId != null) {
+        controller.openChat(supportId);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Support Chat'),
@@ -101,7 +127,7 @@ class SupportChatPage extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
-            SizedBox(height: 4),
+            if (!isMe) SizedBox(height: 4),
             Text(
               message.text,
               style: TextStyle(
@@ -136,42 +162,44 @@ class SupportChatPage extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: messageController,
-              decoration: InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: messageController,
+                decoration: InputDecoration(
+                  hintText: 'Type a message...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
               ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
             ),
-          ),
-          SizedBox(width: 8),
-          CircleAvatar(
-            backgroundColor: Colors.blue,
-            child: IconButton(
-              icon: Icon(Icons.send, color: Colors.white),
-              onPressed: () {
-                if (messageController.text.trim().isNotEmpty) {
-                  controller.sendMessage(messageController.text);
-                  messageController.clear();
-                }
-              },
+            SizedBox(width: 8),
+            CircleAvatar(
+              backgroundColor: Colors.blue,
+              child: IconButton(
+                icon: Icon(Icons.send, color: Colors.white),
+                onPressed: () {
+                  if (messageController.text.trim().isNotEmpty) {
+                    controller.sendMessage(messageController.text);
+                    messageController.clear();
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -179,7 +207,26 @@ class SupportChatPage extends StatelessWidget {
   String _formatMessageTime(String isoTime) {
     try {
       final dateTime = DateTime.parse(isoTime);
-      return DateFormat('HH:mm').format(dateTime);
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+
+      if (difference.inDays == 0) {
+        // Today - show time only
+        final hour = dateTime.hour.toString().padLeft(2, '0');
+        final minute = dateTime.minute.toString().padLeft(2, '0');
+        return '$hour:$minute';
+      } else if (difference.inDays == 1) {
+        return 'Yesterday';
+      } else if (difference.inDays < 7) {
+        // This week - show day name
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        return days[dateTime.weekday - 1];
+      } else {
+        // Older - show date
+        final day = dateTime.day.toString().padLeft(2, '0');
+        final month = dateTime.month.toString().padLeft(2, '0');
+        return '$day/$month/${dateTime.year}';
+      }
     } catch (e) {
       return '';
     }

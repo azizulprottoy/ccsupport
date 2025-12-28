@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../controllers/support_chat_controller.dart';
+import 'package:supportchat/chat/pages/support_chat_page.dart';
+import '../controller/chat_controller.dart';
+import '../model/support_chat_model.dart';
 
 class SupportListPage extends StatelessWidget {
   final controller = Get.put(SupportChatController());

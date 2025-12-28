@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
 
+import '../chat_sevices/api_service.dart';
+import '../chat_sevices/socket.dart';
 import '../model/support_chat_model.dart';
-import '../sevices/api_service.dart';
-import '../sevices/socket.dart';
+
 
 class SupportChatController extends GetxController {
   final SupportApiService _apiService = SupportApiService();

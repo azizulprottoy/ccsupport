@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import'package:supportchat/chat/controller/chat_controller.dart';
+import 'package:get/get.dart';
+import 'package:supportchat/chat/controller/chat_controller.dart';
 import 'package:supportchat/chat/pages/support_list.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -10,10 +12,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(  // Changed from MaterialApp to GetMaterialApp
       title: 'Flutter Demo',
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -35,16 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -55,10 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 final controller = Get.put(SupportChatController());
                 controller.userId = 'user123'; // Your user ID
                 controller.userName = 'John Doe'; // Your user name
-
                 Get.to(() => SupportListPage());
               },
-              child: Text('Support Chat'),
+              child: const Text('Support Chat'),
             )
           ],
         ),

@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import '../model/support_chat_model.dart';
 
 class SupportApiService {
-  final String baseUrl = 'http://YOUR_SERVER_URL:5000'; // Change this
+  final String baseUrl = 'http://10.0.2.2:5000';
 
   Future<List<SupportConversation>> getSupportList() async {
     try {
